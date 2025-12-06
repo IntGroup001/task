@@ -86,6 +86,7 @@ dependencies = [
     { name = "alembic" },
     { name = "asyncpg" },
     { name = "fastapi", extra = ["standard"] },
+    { name = "greenlet", marker = "sys_platform == 'darwin'" },
     { name = "pydantic-settings" },
     { name = "sqlalchemy" },
 ]
@@ -100,6 +101,7 @@ requires-dist = [
     { name = "alembic", specifier = ">=1.17.2" },
     { name = "asyncpg", specifier = ">=0.31.0" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.123.10" },
+    { name = "greenlet", marker = "sys_platform == 'darwin'", specifier = ">=3.2.4" },
     { name = "pydantic-settings", specifier = ">=2.12.0" },
     { name = "sqlalchemy", specifier = ">=2.0.44" },
 ]

@@ -3,7 +3,7 @@ from uuid import uuid4
 from sqlalchemy import Column, String, UUID
 from sqlalchemy.orm import relationship
 
-from db import Base
+from app.db import Base
 
 
 class Brand(Base):
@@ -13,4 +13,4 @@ class Brand(Base):
     name = Column(String, unique=True, index=True, nullable=False)
     country = Column(String)
 
-    models = relationship("CarModel", back_populates="brand")
+    # models = relationship("CarModel", back_populates="brand")
