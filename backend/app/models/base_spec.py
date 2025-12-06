@@ -11,7 +11,9 @@ class BaseSpecification(Base):
     __tablename__ = "base_specs"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    generation_id = Column(UUID(as_uuid=True), ForeignKey("generations.id"), nullable=False)
+    generation_id = Column(
+        UUID(as_uuid=True), ForeignKey("generations.id"), nullable=False
+    )
 
     year = Column(Integer)
 
