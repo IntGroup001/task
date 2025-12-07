@@ -1,0 +1,2 @@
+class BrandAlreadyExists(Exception):
+    pass
