@@ -46,7 +46,7 @@ async def get_brand_by_id(brand_id: UUID, db: AsyncSession = Depends(get_db)):
 @router.get("/by-name", status_code=status.HTTP_200_OK, response_model=Brand)
 async def get_brand_by_name(
     name: str = Query(..., description="Brand name to search for"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     try:
         brand = await brand_service.get_brand_by_name(name, db)

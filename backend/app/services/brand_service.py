@@ -35,17 +35,17 @@ async def get_all_brands(db: AsyncSession) -> List[BrandSchema]:
 
 async def get_brand_by_id(brand_id: UUID, db: AsyncSession) -> BrandSchema:
     brand = await BrandRepository.select_by_id(db, brand_id)
-    
+
     if not brand:
         raise BrandNotFound(f"Brand with id '{brand_id}' not found")
-    
+
     return BrandSchema.model_validate(brand)
 
 
 async def get_brand_by_name(name: str, db: AsyncSession) -> BrandSchema:
     brand = await BrandRepository.select_by_name(db, name)
-    
+
     if not brand:
         raise BrandNotFound(f"Brand with name '{name}' not found")
-    
+
     return BrandSchema.model_validate(brand)
