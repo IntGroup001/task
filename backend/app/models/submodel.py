@@ -10,8 +10,12 @@ class Submodel(Base):
     __tablename__ = "submodels"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    model_id = Column(UUID(as_uuid=True), ForeignKey("models.id"), nullable=False)
+    model_id = Column(
+        UUID(as_uuid=True), ForeignKey("models.id", ondelete="CASCADE"), nullable=False
+    )
     name = Column(String, nullable=False, unique=True, index=True)
 
     model = relationship("CarModel", back_populates="submodels")
-    generations = relationship("Generation", back_populates="submodel")
+    generations = relationship(
+        "Generation", back_populates="submodel", cascade="all, delete-orphan"
+    )

@@ -13,4 +13,6 @@ class Brand(Base):
     name = Column(String, unique=True, index=True, nullable=False)
     country = Column(String)
 
-    models = relationship("CarModel", back_populates="brand")
+    models = relationship(
+        "CarModel", back_populates="brand", cascade="all, delete-orphan"
+    )

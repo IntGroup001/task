@@ -9,9 +9,13 @@ class CarModel(Base):
     __tablename__ = "models"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    brand_id = Column(UUID(as_uuid=True), ForeignKey("brands.id"), nullable=False)
+    brand_id = Column(
+        UUID(as_uuid=True), ForeignKey("brands.id", ondelete="CASCADE"), nullable=False
+    )
     name = Column(String, nullable=False, unique=True, index=True)
     description = Column(String)
 
     brand = relationship("Brand", back_populates="models")
-    submodels = relationship("Submodel", back_populates="model")
+    submodels = relationship(
+        "Submodel", back_populates="model", cascade="all, delete-orphan"
+    )

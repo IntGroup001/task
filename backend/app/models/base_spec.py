@@ -12,7 +12,9 @@ class BaseSpecification(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     generation_id = Column(
-        UUID(as_uuid=True), ForeignKey("generations.id"), nullable=False
+        UUID(as_uuid=True),
+        ForeignKey("generations.id", ondelete="CASCADE"),
+        nullable=False,
     )
 
     year = Column(Integer)
