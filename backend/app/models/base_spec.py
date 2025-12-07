@@ -3,8 +3,8 @@ from uuid import uuid4
 from sqlalchemy import Column, String, Integer, Float, UUID, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 
-from db import Base
-from utils.enums import FuelTypeEnum
+from app.db import Base
+from app.utils.enums import FuelTypeEnum
 
 
 class BaseSpecification(Base):

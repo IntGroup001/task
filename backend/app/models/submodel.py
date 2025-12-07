@@ -14,4 +14,4 @@ class Submodel(Base):
     name = Column(String, nullable=False, unique=True, index=True)
 
     model = relationship("CarModel", back_populates="submodels")
-    # generations = relationship("Generation", back_populates="submodel")
+    generations = relationship("Generation", back_populates="submodel")
