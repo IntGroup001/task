@@ -14,4 +14,4 @@ class CarModel(Base):
     description = Column(String)
 
     brand = relationship("Brand", back_populates="models")
-    # submodels = relationship("Submodel", back_populates="model")
+    submodels = relationship("Submodel", back_populates="model")

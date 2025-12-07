@@ -11,6 +11,7 @@ from app.db import Base
 from app.config import settings
 from app.models.brand import Brand
 from app.models.car_model import CarModel
+from app.models.submodel import Submodel
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
