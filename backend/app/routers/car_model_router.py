@@ -82,3 +82,33 @@ async def get_car_model_by_name_and_brand(
 
     except CarModelNotFound as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
+@router.put("/{car_model_id}", status_code=status.HTTP_200_OK, response_model=CarModel)
+async def update_car_model(
+    car_model_id: UUID, data: CarModelCreate, db: AsyncSession = Depends(get_db)
+):
+    try:
+        car_model = await car_model_service.update_car_model(car_model_id, data, db)
+        return car_model
+
+    except CarModelNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+    except CarModelAlreadyExists as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+
+    except DatabaseIntegrityError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+
+
+@router.delete(
+    "/{car_model_id}", status_code=status.HTTP_200_OK, response_model=CarModel
+)
+async def delete_car_model(car_model_id: UUID, db: AsyncSession = Depends(get_db)):
+    try:
+        car_model = await car_model_service.delete_car_model(car_model_id, db)
+        return car_model
+
+    except CarModelNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

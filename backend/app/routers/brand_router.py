@@ -54,3 +54,31 @@ async def get_brand_by_name(
 
     except BrandNotFound as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
+@router.put("/{brand_id}", status_code=status.HTTP_200_OK, response_model=Brand)
+async def update_brand(
+    brand_id: UUID, data: BrandCreate, db: AsyncSession = Depends(get_db)
+):
+    try:
+        brand = await brand_service.update_brand(brand_id, data, db)
+        return brand
+
+    except BrandNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+    except BrandAlreadyExists as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+
+    except DatabaseIntegrityError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+
+
+@router.delete("/{brand_id}", status_code=status.HTTP_200_OK, response_model=Brand)
+async def delete_brand(brand_id: UUID, db: AsyncSession = Depends(get_db)):
+    try:
+        brand = await brand_service.delete_brand(brand_id, db)
+        return brand
+
+    except BrandNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

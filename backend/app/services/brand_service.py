@@ -49,3 +49,36 @@ async def get_brand_by_name(name: str, db: AsyncSession) -> BrandSchema:
         raise BrandNotFound(f"Brand with name '{name}' not found")
 
     return BrandSchema.model_validate(brand)
+
+
+async def update_brand(
+    brand_id: UUID, brand_data: BrandCreate, db: AsyncSession
+) -> BrandSchema:
+    brand = await BrandRepository.select_by_id(db, brand_id)
+
+    if not brand:
+        raise BrandNotFound(f"Brand with id '{brand_id}' not found")
+
+    try:
+        updated_brand = await BrandRepository.update(db, brand, brand_data.model_dump())
+        return BrandSchema.model_validate(updated_brand)
+
+    except IntegrityError as e:
+        original = e.orig
+
+        if isinstance(original, UniqueViolationError):
+            raise BrandAlreadyExists(
+                f"Brand with name '{brand_data.name}' already exists"
+            )
+
+        else:
+            raise DatabaseIntegrityError(str(original))
+
+
+async def delete_brand(brand_id: UUID, db: AsyncSession) -> BrandSchema:
+    brand = await BrandRepository.delete(db, brand_id)
+
+    if not brand:
+        raise BrandNotFound(f"Brand with id '{brand_id}' not found")
+
+    return BrandSchema.model_validate(brand)

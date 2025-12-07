@@ -78,3 +78,41 @@ async def get_car_model_by_name_and_brand(
         )
 
     return CarModelSchema.model_validate(car_model)
+
+
+async def update_car_model(
+    car_model_id: UUID, car_model_data: CarModelCreate, db: AsyncSession
+) -> CarModelSchema:
+    car_model = await CarModelRepository.select_by_id(db, car_model_id)
+
+    if not car_model:
+        raise CarModelNotFound(f"Car model with id '{car_model_id}' not found")
+
+    try:
+        updated_car_model = await CarModelRepository.update(
+            db, car_model, car_model_data.model_dump()
+        )
+        return CarModelSchema.model_validate(updated_car_model)
+
+    except IntegrityError as e:
+        original = e.orig
+
+        if isinstance(original, ForeignKeyViolationError):
+            raise BrandNotFound(f"Brand with id '{car_model_data.brand_id}' not found")
+
+        elif isinstance(original, UniqueViolationError):
+            raise CarModelAlreadyExists(
+                f"Car model with name '{car_model_data.name}' already exists for this brand"
+            )
+
+        else:
+            raise DatabaseIntegrityError(str(original))
+
+
+async def delete_car_model(car_model_id: UUID, db: AsyncSession) -> CarModelSchema:
+    car_model = await CarModelRepository.delete(db, car_model_id)
+
+    if not car_model:
+        raise CarModelNotFound(f"Car model with id '{car_model_id}' not found")
+
+    return CarModelSchema.model_validate(car_model)
