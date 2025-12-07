@@ -77,3 +77,33 @@ async def get_submodel_by_name(
 
     except SubmodelNotFound as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
+@router.put("/{submodel_id}", status_code=status.HTTP_200_OK, response_model=Submodel)
+async def update_submodel(
+    submodel_id: UUID, data: SubmodelCreate, db: AsyncSession = Depends(get_db)
+):
+    try:
+        submodel = await submodel_service.update_submodel(submodel_id, data, db)
+        return submodel
+
+    except SubmodelNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+    except SubmodelAlreadyExists as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+
+    except DatabaseIntegrityError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+
+
+@router.delete(
+    "/{submodel_id}", status_code=status.HTTP_200_OK, response_model=Submodel
+)
+async def delete_submodel(submodel_id: UUID, db: AsyncSession = Depends(get_db)):
+    try:
+        submodel = await submodel_service.delete_submodel(submodel_id, db)
+        return submodel
+
+    except SubmodelNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

@@ -105,3 +105,49 @@ async def get_base_specifications_by_year_and_generation(
     return [
         BaseSpecificationSchema.model_validate(base_spec) for base_spec in base_specs
     ]
+
+
+async def update_base_specification(
+    base_spec_id: UUID, base_spec_data: BaseSpecificationCreate, db: AsyncSession
+) -> BaseSpecificationSchema:
+    base_spec = await BaseSpecificationRepository.select_by_id(db, base_spec_id)
+
+    if not base_spec:
+        raise BaseSpecificationNotFound(
+            f"Base specification with id '{base_spec_id}' not found"
+        )
+
+    try:
+        updated_base_spec = await BaseSpecificationRepository.update(
+            db, base_spec, base_spec_data.model_dump()
+        )
+        return BaseSpecificationSchema.model_validate(updated_base_spec)
+
+    except IntegrityError as e:
+        original = e.orig
+
+        if isinstance(original, ForeignKeyViolationError):
+            raise GenerationNotFound(
+                f"Generation with id '{base_spec_data.generation_id}' not found"
+            )
+
+        elif isinstance(original, UniqueViolationError):
+            raise BaseSpecificationAlreadyExists(
+                "Base specification already exists for this generation"
+            )
+
+        else:
+            raise DatabaseIntegrityError(str(original))
+
+
+async def delete_base_specification(
+    base_spec_id: UUID, db: AsyncSession
+) -> BaseSpecificationSchema:
+    base_spec = await BaseSpecificationRepository.delete(db, base_spec_id)
+
+    if not base_spec:
+        raise BaseSpecificationNotFound(
+            f"Base specification with id '{base_spec_id}' not found"
+        )
+
+    return BaseSpecificationSchema.model_validate(base_spec)

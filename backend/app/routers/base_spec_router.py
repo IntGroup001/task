@@ -99,3 +99,44 @@ async def get_base_specifications_by_year_and_generation(
 
     except BaseSpecificationNotFound as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
+@router.put(
+    "/{base_spec_id}", status_code=status.HTTP_200_OK, response_model=BaseSpecification
+)
+async def update_base_specification(
+    base_spec_id: UUID,
+    data: BaseSpecificationCreate,
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        base_spec = await base_spec_service.update_base_specification(
+            base_spec_id, data, db
+        )
+        return base_spec
+
+    except BaseSpecificationNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+    except GenerationNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+    except BaseSpecificationAlreadyExists as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+
+    except DatabaseIntegrityError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+
+
+@router.delete(
+    "/{base_spec_id}", status_code=status.HTTP_200_OK, response_model=BaseSpecification
+)
+async def delete_base_specification(
+    base_spec_id: UUID, db: AsyncSession = Depends(get_db)
+):
+    try:
+        base_spec = await base_spec_service.delete_base_specification(base_spec_id, db)
+        return base_spec
+
+    except BaseSpecificationNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

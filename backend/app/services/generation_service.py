@@ -89,3 +89,43 @@ async def get_generation_by_name_and_submodel(
         )
 
     return GenerationSchema.model_validate(generation)
+
+
+async def update_generation(
+    generation_id: UUID, generation_data: GenerationCreate, db: AsyncSession
+) -> GenerationSchema:
+    generation = await GenerationRepository.select_by_id(db, generation_id)
+
+    if not generation:
+        raise GenerationNotFound(f"Generation with id '{generation_id}' not found")
+
+    try:
+        updated_generation = await GenerationRepository.update(
+            db, generation, generation_data.model_dump()
+        )
+        return GenerationSchema.model_validate(updated_generation)
+
+    except IntegrityError as e:
+        original = e.orig
+
+        if isinstance(original, ForeignKeyViolationError):
+            raise SubmodelNotFound(
+                f"Submodel with id '{generation_data.submodel_id}' not found"
+            )
+
+        elif isinstance(original, UniqueViolationError):
+            raise GenerationAlreadyExists(
+                f"Generation with name '{generation_data.name}' already exists for this submodel"
+            )
+
+        else:
+            raise DatabaseIntegrityError(str(original))
+
+
+async def delete_generation(generation_id: UUID, db: AsyncSession) -> GenerationSchema:
+    generation = await GenerationRepository.delete(db, generation_id)
+
+    if not generation:
+        raise GenerationNotFound(f"Generation with id '{generation_id}' not found")
+
+    return GenerationSchema.model_validate(generation)

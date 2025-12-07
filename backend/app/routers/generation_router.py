@@ -84,3 +84,38 @@ async def get_generation_by_name_and_submodel(
 
     except GenerationNotFound as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
+@router.put(
+    "/{generation_id}", status_code=status.HTTP_200_OK, response_model=Generation
+)
+async def update_generation(
+    generation_id: UUID, data: GenerationCreate, db: AsyncSession = Depends(get_db)
+):
+    try:
+        generation = await generation_service.update_generation(generation_id, data, db)
+        return generation
+
+    except GenerationNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+    except SubmodelNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+    except GenerationAlreadyExists as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+
+    except DatabaseIntegrityError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+
+
+@router.delete(
+    "/{generation_id}", status_code=status.HTTP_200_OK, response_model=Generation
+)
+async def delete_generation(generation_id: UUID, db: AsyncSession = Depends(get_db)):
+    try:
+        generation = await generation_service.delete_generation(generation_id, db)
+        return generation
+
+    except GenerationNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

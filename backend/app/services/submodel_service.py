@@ -78,3 +78,43 @@ async def get_submodel_by_name(name: str, db: AsyncSession) -> SubmodelSchema:
         raise SubmodelNotFound(f"Submodel with name '{name}' not found")
 
     return SubmodelSchema.model_validate(submodel)
+
+
+async def update_submodel(
+    submodel_id: UUID, submodel_data: SubmodelCreate, db: AsyncSession
+) -> SubmodelSchema:
+    submodel = await SubmodelRepository.select_by_id(db, submodel_id)
+
+    if not submodel:
+        raise SubmodelNotFound(f"Submodel with id '{submodel_id}' not found")
+
+    try:
+        updated_submodel = await SubmodelRepository.update(
+            db, submodel, submodel_data.model_dump()
+        )
+        return SubmodelSchema.model_validate(updated_submodel)
+
+    except IntegrityError as e:
+        original = e.orig
+
+        if isinstance(original, ForeignKeyViolationError):
+            raise CarModelNotFound(
+                f"Car model with id '{submodel_data.model_id}' not found"
+            )
+
+        elif isinstance(original, UniqueViolationError):
+            raise SubmodelAlreadyExists(
+                f"Submodel with name '{submodel_data.name}' already exists"
+            )
+
+        else:
+            raise DatabaseIntegrityError(str(original))
+
+
+async def delete_submodel(submodel_id: UUID, db: AsyncSession) -> SubmodelSchema:
+    submodel = await SubmodelRepository.delete(db, submodel_id)
+
+    if not submodel:
+        raise SubmodelNotFound(f"Submodel with id '{submodel_id}' not found")
+
+    return SubmodelSchema.model_validate(submodel)
