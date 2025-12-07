@@ -1,9 +1,17 @@
 from fastapi import APIRouter
 
-from app.routers import brand_router, car_model_router, submodel_router
+from app.routers import (
+    brand_router,
+    car_model_router,
+    submodel_router,
+    generation_router,
+    base_spec_router,
+)
 
 
 main_router = APIRouter()
 main_router.include_router(brand_router.router)
 main_router.include_router(car_model_router.router)
 main_router.include_router(submodel_router.router)
+main_router.include_router(generation_router.router)
+main_router.include_router(base_spec_router.router)
