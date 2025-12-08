@@ -6,6 +6,7 @@ from app.routers import (
     submodel_router,
     generation_router,
     base_spec_router,
+    car_data_router,
 )
 
 
@@ -15,3 +16,4 @@ main_router.include_router(car_model_router.router)
 main_router.include_router(submodel_router.router)
 main_router.include_router(generation_router.router)
 main_router.include_router(base_spec_router.router)
+main_router.include_router(car_data_router.router)
