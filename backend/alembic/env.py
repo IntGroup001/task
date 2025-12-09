@@ -14,6 +14,7 @@ from app.models.car_model import CarModel
 from app.models.submodel import Submodel
 from app.models.generation import Generation
 from app.models.base_spec import BaseSpecification
+from app.models.user import User
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

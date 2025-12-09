@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASSWORD: str = ""
     DB_NAME: str = ""
+    JWT: str = ""
 
     @computed_field  # type: ignore[prop-decorator]
     @property
